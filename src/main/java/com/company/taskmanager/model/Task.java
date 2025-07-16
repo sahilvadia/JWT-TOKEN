@@ -1,9 +1,6 @@
 package com.company.taskmanager.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.UUID;
@@ -20,6 +17,10 @@ public class Task {
     private UUID id;
     private String title;
     private String description;
-    private String assignedTo;
+
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private Users assignedTo;
     private boolean completed;
 }

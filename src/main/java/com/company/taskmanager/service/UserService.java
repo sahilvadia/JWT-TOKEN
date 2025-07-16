@@ -8,4 +8,5 @@ public interface UserService {
 
     ResponseEntity<?> register(Users user);
     ResponseEntity<?> login(LoginDto user);
+    ResponseEntity<?> findByName(String name);
 }

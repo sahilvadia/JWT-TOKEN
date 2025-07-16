@@ -2,6 +2,8 @@ package com.company.taskmanager.service.impl;
 
 import com.company.taskmanager.dto.request.TaskRequestDTO;
 import com.company.taskmanager.model.Task;
+import com.company.taskmanager.model.Users;
+import com.company.taskmanager.repository.UsersRepository;
 import com.company.taskmanager.service.TaskService;
 import com.company.taskmanager.repository.TaskRepository;
 import com.company.taskmanager.utility.ResponseUtil;
@@ -21,15 +23,18 @@ import java.util.UUID;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    private final UsersRepository usersRepository;
 
     @Override
     public ResponseEntity<?> createTask(TaskRequestDTO requestDTO) {
         if(requestDTO!=null){
+            Users assignedTo = usersRepository.findById(requestDTO.getAssignedTo().getId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
             Task task = Task.builder()
                     .title(requestDTO.getTitle())
                     .description(requestDTO.getDescription())
-                    .assignedTo(requestDTO.getAssignedTo())
+                    .assignedTo(assignedTo)
                     .completed(requestDTO.isCompleted())
                     .build();
 
@@ -76,10 +81,15 @@ public class TaskServiceImpl implements TaskService {
                 Task existingTask = existingTaskOptional.get();
 
                 Task task = Task.builder()
-                        .title(requestDTO.getTitle() !=null ? requestDTO.getTitle() : existingTask.getTitle())
-                        .completed(requestDTO.isCompleted() !=existingTask.isCompleted() ? requestDTO.isCompleted() : existingTask.isCompleted())
-                        .assignedTo(requestDTO.getAssignedTo()!=null ? requestDTO.getAssignedTo() : existingTask.getAssignedTo())
-                        .description(requestDTO.getDescription()!=null ? requestDTO.getDescription():existingTask.getDescription())
+                        .title(requestDTO.getTitle() != null ? requestDTO.getTitle() : existingTask.getTitle())
+                        .description(requestDTO.getDescription() != null ? requestDTO.getDescription() : existingTask.getDescription())
+                        .assignedTo(requestDTO.getAssignedTo() != null
+                                ? usersRepository.findById(requestDTO.getAssignedTo().getId())
+                                .orElseThrow(() -> new RuntimeException("User not found"))
+                                : existingTask.getAssignedTo())
+                        .completed(requestDTO.isCompleted() != existingTask.isCompleted()
+                                ? requestDTO.isCompleted()
+                                : existingTask.isCompleted())
                         .build();
                 try {
                     updatedTask = taskRepository.save(task);

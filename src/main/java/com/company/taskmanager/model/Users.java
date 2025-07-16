@@ -3,6 +3,8 @@ package com.company.taskmanager.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Builder
 @Data
@@ -17,5 +19,8 @@ public class Users {
     private String userName;
     private String password;
     private String email;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Task task;
 
 }

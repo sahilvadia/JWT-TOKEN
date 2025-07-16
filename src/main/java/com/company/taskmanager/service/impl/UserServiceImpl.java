@@ -44,5 +44,10 @@ public class UserServiceImpl implements UserService {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
+    @Override
+    public ResponseEntity<?> findByName(String name) {
+        return ResponseUtil.success("USER_FOUND","user found",usersRepository.findByUserName(name));
+    }
+
 
 }
