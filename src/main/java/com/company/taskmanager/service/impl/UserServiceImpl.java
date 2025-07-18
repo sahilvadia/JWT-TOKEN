@@ -16,6 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +48,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<?> findByName(String name) {
-        return ResponseUtil.success("USER_FOUND","user found",usersRepository.findByUserName(name));
+
+        Users isPresent = usersRepository.findByUserName(name);
+        if (isPresent!=null)
+            return ResponseUtil.success("USER_FOUND","user found",isPresent);
+
+        return ResponseUtil.failure("USER_NOT_FOUND","user not found");
+
     }
 
 
